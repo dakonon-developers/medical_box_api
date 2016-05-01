@@ -46,7 +46,13 @@ INSTALLED_APPS = [
     # 'rest_framework_swagger',
     # 'dry_rest_permissions',
     'rest_framework.authtoken',
-    'rest_framework'
+    'rest_framework',
+    'cities_light',
+    'clinics',
+    'dates',
+    'expedient',
+    'members',
+    'rooms'
 ]
 
 MIDDLEWARE_CLASSES = [
