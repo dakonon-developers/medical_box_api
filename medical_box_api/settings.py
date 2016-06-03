@@ -48,12 +48,15 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework',
     'cities_light',
+    'cities_customized',
     'clinics',
-    'dates',
-    'expedient',
-    'members',
-    'rooms'
+    'doctors',
+    'patients',
+    'specialities',
+    'rooms',
+    'appointments'
 ]
+CITIES_LIGHT_APP_NAME = 'cities_customized'
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -120,12 +123,13 @@ REST_FRAMEWORK = {
     )
 }
 
-JWT_AUTH = {
-    # 'JWT_ALLOW_REFRESH': True,
-    # 'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'utils.jwt_response_payload_handler',
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=21600)
-}
+
+# JWT_AUTH = {
+#     # 'JWT_ALLOW_REFRESH': True,
+#     # 'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
+#     'JWT_RESPONSE_PAYLOAD_HANDLER': 'utils.jwt_response_payload_handler',
+#     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=21600)
+# }
 
 
 # Password validation
@@ -166,3 +170,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+CITIES_LIGHT_TRANSLATION_LANGUAGES = ['es']
+CITIES_LIGHT_INCLUDE_COUNTRIES = ['VE']
+# CITIES_LIGHT_INCLUDE_CITY_TYPES = ['PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA4', 'PPLC', 'PPLF', 'PPLG', 'PPLL', 'PPLR', 'PPLS', 'STLMT',]
