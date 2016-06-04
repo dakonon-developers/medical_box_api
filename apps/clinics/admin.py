@@ -8,9 +8,6 @@ from rooms.models import Room, Schedule, RoomDoctor
 from specialities.models import Speciality
 
 admin.site.register(Appointment)
-# admin.site.register(Country)
-# admin.site.register(Region)
-# admin.site.register(City)
 admin.site.register(Clinic)
 admin.site.register(Doctor)
 admin.site.register(DoctorSpeciality)

@@ -10,6 +10,8 @@ class Patient(models.Model):
     address = models.CharField(max_length=128, blank=True, null=True)
     is_active = models.BooleanField()
 
+    def __unicode__(self):
+        return '{0}'.format(self.id)
 
     def __str__(self):
         return '{0}'.format(self.id)
