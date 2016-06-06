@@ -6,6 +6,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from patients.models import Patient
 from rest_framework import filters
+from dry_rest_permissions.generics import DRYPermissions
 
 class PatientViewSet(viewsets.ModelViewSet):
     """
@@ -22,6 +23,8 @@ class PatientViewSet(viewsets.ModelViewSet):
     serializer_class = PatientSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('phone_number', 'address', 'is_active', 'user__first_name', 'user__last_name', 'user__email')
+    filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend)
+    permission_classes = (DRYPermissions,)
     # Another option to filter: 
     # https://github.com/philipn/django-rest-framework-filters
 
@@ -35,15 +38,19 @@ class PatientViewSet(viewsets.ModelViewSet):
         password = self.request.data["password"]
         if email:
             if User.objects.filter(email=email).exists():
-                # user = User.objects.get(email=email)
-                return Response({"result": False, "notice": "Email is already registred"})
+                print "AAAA"
+                user = User.objects.get(email=email)
+                if not user.check_password(password):
+                    return Response({"result": False, "notice": "Email is already registred and password don't belong"})
             else:
+                print 'BBBBB'
                 user = User.objects.create_user(
                     username=email,
                     first_name=first_name,
                     last_name=last_name,
                     email=email)
                 user.set_password(password)
+                user.save()
 
             serializer.save(user=user, is_active=True)
         else:
