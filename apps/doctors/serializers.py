@@ -1,17 +1,17 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-# from validate_email import validate_email
-from patients.models import Patient
+from doctors.models import Doctor
 from utils.serializers import UserSerializer
 
-class PatientSerializer(serializers.ModelSerializer):
+class DoctorSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     is_active = serializers.SerializerMethodField()
 
     class Meta:
-        model = Patient
-        fields = ('id', 'phone_number', 'address', 'is_active',
-            'user')
+        model = Doctor
+        fields = ('id', 'name', 'phone_number', 'is_active',
+            'user'
+            )
         depth = 1
 
     def get_user(self, doctor):
@@ -26,3 +26,4 @@ class PatientSerializer(serializers.ModelSerializer):
             return doctor.is_active
         else: 
             return None
+

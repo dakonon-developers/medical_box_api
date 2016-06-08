@@ -7,17 +7,19 @@ from rest_framework.response import Response
 from patients.models import Patient
 from rest_framework import filters
 from dry_rest_permissions.generics import DRYPermissions
+from rest_framework import serializers
 
 class PatientViewSet(viewsets.ModelViewSet):
     """
     A simple ViewSet for listing or retrieving Patients.
     > Parameters:
 
-      * Create: POST /api/patients/ => **phone_number, address, first_name, last_name, email, password**.
+      * Create: POST /api/patients/ => **phone_number, (Optionals => first_name, last_name, address), email, password**.
       * Consult All: GET /api/patients/ => (Optionals: **phone_number, address, is_active, user__first_name, user__last_name, user__email**).
       * Consult One: GET /api/patients/ID.
       * Update: PATCH or PUT => **{"id", (Optionals)-> {"phone_number", "address", "user": {"first_name", "last_name", "id"}}**
       * Delete: DELETE /api/patients/ID.
+      * To Authenticate /api/api-token-auth/
     """
     model = Patient
     serializer_class = PatientSerializer
@@ -32,18 +34,30 @@ class PatientViewSet(viewsets.ModelViewSet):
         return Patient.objects.all()
 
     def perform_create(self, serializer):
-        first_name = self.request.data["first_name"]
-        last_name = self.request.data["last_name"]
-        email = self.request.data["email"]
-        password = self.request.data["password"]
+        data = self.request.data
+        first_name = data["first_name"] if "first_name" in data else None
+        last_name = data["last_name"] if "last_name" in data else None
+        email = data["email"]
+        password = data["password"]
         if email:
             if User.objects.filter(email=email).exists():
-                print "AAAA"
                 user = User.objects.get(email=email)
+                if Patient.objects.filter(user=user).exists():
+                    raise serializers.ValidationError(
+                        {"error":'Patient already exists', "status": 400, "exists": True})
                 if not user.check_password(password):
-                    return Response({"result": False, "notice": "Email is already registred and password don't belong"})
+                    raise serializers.ValidationError(
+                        {"error":'Password do not belong', "status": 400})
+                else:
+                    if email:
+                        user.username=email
+                        user.email=email
+                    if first_name:
+                        user.first_name=first_name
+                    if last_name:
+                        user.last_name=last_name
+                    user.save()
             else:
-                print 'BBBBB'
                 user = User.objects.create_user(
                     username=email,
                     first_name=first_name,
