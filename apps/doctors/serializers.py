@@ -15,8 +15,8 @@ class DoctorSerializer(serializers.ModelSerializer):
         depth = 1
 
     def get_user(self, doctor):
-        request = self.context['request']
         if hasattr(doctor, 'user'):
+            request = self.context['request']
             return UserSerializer(doctor.user, context={'request': request}).data
         else:
             return None
@@ -26,4 +26,3 @@ class DoctorSerializer(serializers.ModelSerializer):
             return doctor.is_active
         else: 
             return None
-

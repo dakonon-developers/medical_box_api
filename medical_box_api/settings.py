@@ -62,6 +62,16 @@ INSTALLED_APPS = [
     'appointments'
 ]
 CITIES_LIGHT_APP_NAME = 'cities_customized'
+CITIES_LIGHT_TRANSLATION_LANGUAGES = ['es', 'en']
+CITIES_LIGHT_INCLUDE_COUNTRIES = [
+    # Spanish
+    'AR', 'BO', 'CL', 'CO', 'CR', 'DO', 'EC', 'SV', 'GT', 'HN',
+    'MX', 'NI', 'PA', 'PY', 'PE', 'PR', 'ES', 'UY', 'VE', 
+    # English
+    'AU', 'BZ', 'CA', 'CB', 'IE', 'JM', 'NZ', 'PH', 'ZA', 'TT',
+    'GB', 'US', 'ZW'
+    # source: https://msdn.microsoft.com/en-us/library/ee825488(v=cs.20).aspx
+    ]
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -108,6 +118,7 @@ DATABASES = {
         'PASSWORD': os.environ['DB_PASSWORD'],
         'HOST': os.environ['DB_HOSTNAME'],
         'PORT': os.environ['DB_PORT'],
+        'ATOMIC_REQUESTS': True,
     }
 }
 

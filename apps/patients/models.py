@@ -12,7 +12,7 @@ class Patient(models.Model):
     user = models.ForeignKey(User)
     phone_number = models.CharField(max_length=50, blank=True, null=True)
     address = models.CharField(max_length=128, blank=True, null=True)
-    is_active = models.BooleanField()
+    is_active = models.BooleanField(default=True)
 
     def __unicode__(self):
         return '{0}'.format(self.id)

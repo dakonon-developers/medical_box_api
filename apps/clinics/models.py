@@ -4,23 +4,74 @@ from django.utils.encoding import python_2_unicode_compatible
 from cities_customized.models import Country, Region, City
 from doctors.models import Doctor
 from patients.models import Patient
+from django.contrib.auth.models import User
 
 @python_2_unicode_compatible
 class Clinic(models.Model):
-    # owner = models.ForeignKey(Member) ########
+    created_by = models.ForeignKey(User)
     name = models.CharField(max_length=128)
     country = models.ForeignKey(Country)
     # region = models.ForeignKey(Region) ######
     city = models.ForeignKey(City)
     zip_code = models.CharField(max_length=10, blank=True, null=True)
-    address = models.CharField(max_length=128, blank=True, null=True)
+    address = models.CharField(max_length=128)
     latitude = models.CharField(max_length=128, blank=True, null=True)
     longitude = models.CharField(max_length=128, blank=True, null=True)
     phone_one = models.CharField(max_length=50, blank=True, null=True)
     phone_two = models.CharField(max_length=50, blank=True, null=True)
     doctors = models.ManyToManyField(Doctor)
-    # doctors = models.ManyToManyField(Patient)
-    
+    is_active = models.BooleanField(default=True)
+
 
     def __str__(self):
         return '{0}'.format(self.id)
+
+
+    ######################
+    # Global Permissions #
+    ######################
+
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    @staticmethod
+    def has_create_permission(request):
+        if ( not request.user.is_anonymous()
+            and Doctor.objects.filter(user = request.user).exists()):
+            return True
+        return False
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    ######################
+    # Object Permissions #
+    ######################
+
+    def has_object_write_permission(self, request):
+        return True
+
+    def has_object_update_doctors_permission(self, request):
+        return True
+
+    def has_object_create_permission(self, request):
+        if (not request.user.is_anonymous
+            and Doctor.objects.filter(user = request.user).exists()):
+            return True
+        return False
+
+    def has_object_read_permission(self, request):
+        if Doctor.objects.filter(user = request.user).exists():
+            return True
+        return False
+
+    def has_object_update_permission(self, request):
+        if hasattr(request, 'user'):
+            if self.created_by == request.user:
+                return True
+        return False
+
+    def has_object_destroy_permission(self, request):
+        return False

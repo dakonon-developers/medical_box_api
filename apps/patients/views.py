@@ -17,9 +17,9 @@ class PatientViewSet(viewsets.ModelViewSet):
       * Create: POST /api/patients/ => **phone_number, (Optionals => first_name, last_name, address), email, password**.
       * Consult All: GET /api/patients/ => (Optionals: **phone_number, address, is_active, user__first_name, user__last_name, user__email**).
       * Consult One: GET /api/patients/ID.
-      * Update: PATCH or PUT => **{"id", (Optionals)-> {"phone_number", "address", "user": {"first_name", "last_name", "id"}}**
+      * Update: PATCH or PUT /api/patients/ID (login required as a patient) => **{"id", (Optionals)-> {"phone_number", "address", "user": {"first_name", "last_name", "id"}}**
       * Delete: DELETE /api/patients/ID.
-      * To Authenticate /api/api-token-auth/
+      * To Authenticate /api/api-token-auth/ parameters => **{"username", "password"}**
     """
     model = Patient
     serializer_class = PatientSerializer
@@ -68,7 +68,8 @@ class PatientViewSet(viewsets.ModelViewSet):
 
             serializer.save(user=user, is_active=True)
         else:
-            return Response({"result": False, "notice": "fields invalids"})
+            raise serializers.ValidationError(
+                {"error":'Invalid fields', "status": 400})
 
     def perform_update(self, serializer):
         id = self.request.data["user"]["id"]
