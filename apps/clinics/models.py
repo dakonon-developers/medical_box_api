@@ -1,3 +1,7 @@
+"""
+    Created by: pdonaire1
+    Ing. Pablo Alejandro Gonzalez Donaire
+"""
 from __future__ import unicode_literals
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
@@ -75,3 +79,52 @@ class Clinic(models.Model):
 
     def has_object_destroy_permission(self, request):
         return False
+
+
+@python_2_unicode_compatible
+class ClinicAdmin(models.Model):
+    user = models.ForeignKey(User)
+    clinic = models.ForeignKey(Clinic)
+    
+    def __str__(self):
+        return '{0}'.format(self.id)
+
+
+    ######################
+    # Global Permissions #
+    ######################
+
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    @staticmethod
+    def has_create_permission(request):
+        return True
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    ######################
+    # Object Permissions #
+    ######################
+
+    def has_object_write_permission(self, request):
+        return True
+
+    def has_object_update_doctors_permission(self, request):
+        return True
+
+    def has_object_create_permission(self, request):
+        return True
+
+    def has_object_read_permission(self, request):
+        return True
+
+    def has_object_update_permission(self, request):
+        return True
+
+    def has_object_destroy_permission(self, request):
+        return False
+

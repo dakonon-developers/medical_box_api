@@ -1,3 +1,7 @@
+"""
+    Created by: pdonaire1
+    Ing. Pablo Alejandro Gonzalez Donaire
+"""
 from django.contrib.auth.models import User
 from clinics.serializers import ClinicSerializer
 from django.http import JsonResponse
@@ -6,21 +10,22 @@ from rest_framework import (
 from rest_framework.response import Response
 from dry_rest_permissions.generics import DRYPermissions
 from utils.functions import build_json_object
-from clinics.models import Clinic
+from clinics.models import Clinic, ClinicAdmin
 from cities_customized.models import Country, Region, City
 from doctors.models import Doctor
 from rest_framework.decorators import detail_route
 
 class ClinicViewSet(viewsets.ModelViewSet):
     """
-    A simple ViewSet for listing or retrieving Patients.
+    A simple ViewSet for listing or retrieving Clinics.
     > Parameters:
 
       * Create: POST /api/clinics/ (login required as a Doctor) => **name, country_id, city_id, address, (Optionals => zip_code, latitude, longitude, phone_one, phone_two)**.
       * Consult All: GET /api/clinics/ => (Optionals: **phone_number, address, is_active, user__first_name, user__last_name, user__email**).
       * Consult One: GET /api/clinics/ID.
       * Update: PATCH or PUT /api/clinics/ID (login required as a Doctor) => **{(Optionals)-> {"name", "zip_code", "address", "latitude", "longitude", "phone_one", "phone_two", "country_id", "city_id" }**
-      * Update: PATCH or PUT /api/clinics/ID/update_doctors/ (login required as a Doctor who has created the clinic) => **{"doctors": [1,2,3]}  ->this will remove all the doctors registered and will to add the doctors from the list**
+      * Update Doctors: POST /api/clinics/ID/update_doctors/ (login required as a Doctor who has created the clinic) => **{"doctors": [1,2,3]}  ->this will remove all the doctors registered and will to add the doctors from the list**  (USERS' IDS ARE NOT THE SAME THAT DOCTOR'S IDS).
+      * Update Admin: POST /api/clinics/ID/update_admin/ => **{"users": [1,2,3]}** (USERS' IDS ARE NOT THE SAME THAT DOCTOR'S IDS).
       * Delete: DELETE /api/clinics/ID.
       * To Authenticate /api/api-token-auth/ parameters => **{"username", "password"}**
     """
@@ -57,6 +62,27 @@ class ClinicViewSet(viewsets.ModelViewSet):
                 clinic.doctors.add(*doctors)# Add the doctors from the ids list
                 doctors = build_json_object(clinic.doctors.all())
             else:
-                doctors = {"result": False, "notice": "you are not the user who has created the clinic"}
+                doctors = {"result": False, "notice": "you are not an user admin in this clinic"}
             return Response(doctors)
         return Response(build_json_object(clinic.doctors.all()))
+
+    @detail_route(methods=['get', 'post'],url_path='update_admin')
+    def update_admin(self, request, pk=None):
+        clinic = Clinic.objects.get(id=pk)
+        clinic_admin = ClinicAdmin.objects.filter(clinic__id=pk)
+        exist_admin = ClinicAdmin.objects.filter(
+            clinic__id=pk, user=request.user).exists()
+        if request.method == "POST":
+            if request.user == clinic.created_by or exist_admin:
+                users = User.objects.filter(
+                    id__in=request.data['users'])
+                clinic_admin.delete() # Remove old ClinicAdmin
+                for i in users: # Add the users from the ids list
+                    admin = ClinicAdmin(user=i, clinic=clinic)
+                    admin.save()
+                doctors = build_json_object(ClinicAdmin.objects.all())
+            else:
+                doctors = {"result": False, "notice": "you are not an user admin in this clinic"}
+            return Response(doctors)
+
+        return Response(build_json_object(clinic_admin))
