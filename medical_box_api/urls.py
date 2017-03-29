@@ -2,7 +2,7 @@ from django.conf.urls import url
 from django.contrib import admin
 from rest_framework.authtoken import views
 from django.conf.urls import include
-from . routers import router
+from .routers import router
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

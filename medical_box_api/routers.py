@@ -8,6 +8,7 @@ from doctors.views import DoctorViewSet
 from clinics.views import ClinicViewSet
 from specialities.views import SpecialityViewSet
 from rooms.views import RoomViewSet
+from appointments.views import AppointmentViewSet
 
 # router = SimpleRouter()
 router = DefaultRouter()
@@ -17,5 +18,6 @@ router.register(r'doctors', DoctorViewSet, 'doctors')
 router.register(r'clinics', ClinicViewSet, 'clinics')
 router.register(r'specialities', SpecialityViewSet, 'specialities')
 router.register(r'rooms', RoomViewSet, 'rooms')
+router.register(r'appointments', AppointmentViewSet, 'appointments')
 
 # urlpatterns = router.urls

@@ -113,11 +113,11 @@ WSGI_APPLICATION = 'medical_box_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ['DB_NAME'],
-        'USER': os.environ['DB_USERNAME'],
-        'PASSWORD': os.environ['DB_PASSWORD'],
-        'HOST': os.environ['DB_HOSTNAME'],
-        'PORT': os.environ['DB_PORT'],
+        'NAME': 'medical',
+        'USER': 'root',
+        'PASSWORD': '123456',
+        'HOST': 'localhost',
+        'PORT': '3306',
         'ATOMIC_REQUESTS': True,
     }
 }
